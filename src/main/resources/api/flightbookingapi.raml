@@ -1,5 +1,17 @@
 #%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/fca9f5fb-fcfc-417e-b2df-d8a5298a9c14 # 
 title: FlightBookingAPI
+mediaType: 
+  - application/json
+  - application/xml
+protocols: [HTTP, HTTPS]
+version: v1
+
+securitySchemes:
+  oauth_2_0: !include /securitySchemes/securityScheme.raml
+
+traits:
+  headerTrait: !include /traits/headerTrait.raml
 
 types:
   Flight: !include DataTypes/flightdataType.raml
@@ -7,6 +19,8 @@ types:
   Car: !include DataTypes/CarDataType.raml
   CarBooking: !include DataTypes/CarbookingdataType.raml
 
+securedBy:
+      - oauth_2_0
 
 /bookmyholiday:
 
@@ -31,7 +45,7 @@ types:
         queryParameters:
           source?: string
           destination?: string
-          departureDate?: string
+  
 
         body:
           application/json:
@@ -127,7 +141,19 @@ types:
             application/json:
               example:
                 message: Flight added (but not really)          
-
+    
+    /{airline}:
+      get:
+        queryParameters:
+          source?: string
+          destination?: string
+        body:
+          application/json:
+            example: !include FlightDummyData/flightexample.raml
+      
+      post:
+      put:
+      delete:
 
     /booking:
       description: To book flight

@@ -22,19 +22,27 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
 	"destination":vars.destination
 }]]]></http:query-params>
 				</http:request>
-			</when>
-			<otherwise>
-				<http:request method="GET" doc:name="Request" doc:id="f530539e-47ee-4f78-a47c-f512c01ed1fc" path="/api/flights" config-ref="HTTP_Request_configuration_flights" responseTimeout="30000"/>
-			</otherwise>
-		</choice>
-		<ee:transform doc:name="Transform Message" doc:id="019bd9d8-79b5-4b99-ae53-a61dc0a084c7" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+				<ee:transform doc:name="Transform Message" doc:id="019bd9d8-79b5-4b99-ae53-a61dc0a084c7">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			</when>
+			<otherwise>
+				<http:request method="GET" doc:name="Request" doc:id="f530539e-47ee-4f78-a47c-f512c01ed1fc" path="/api/flights" config-ref="HTTP_Request_configuration_flights" responseTimeout="30000"/>
+				<ee:transform doc:name="Transform Message" doc:id="2914e591-a4d7-4a26-8d4d-65cd882d1521" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
 	</flow>
 	<flow name="FlightBookingDetails" doc:id="1a794712-769e-4b21-bce0-ca70ef2be6a9">
 		<salesforce:query-all doc:name="Query all" doc:id="e9a50fc9-820b-4ec7-978f-1506f4625338" config-ref="Salesforce_Config">
@@ -244,13 +252,40 @@ payload]]></ee:set-payload>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="b73fd34a-1f7a-4830-b837-e46179c8ec5c" message="#[payload]" />
 	</flow>
-	<flow name="getCars" doc:id="82c23923-5cb3-4667-82e6-07b329d98615" >
-		<http:request method="GET" doc:name="Request" doc:id="57ea5d56-acf5-4b1a-b68b-fc22a5bb7f50" path="/api/cars/{carPartner}" config-ref="HTTP_Request_configuration_car">
-			<http:uri-params ><![CDATA[#[{"carPartner":attributes.uriParams.carPartner
-	
+	<flow name="getCarsByCarPartner" doc:id="82c23923-5cb3-4667-82e6-07b329d98615" >
+		<http:request method="GET" doc:name="Request" doc:id="57ea5d56-acf5-4b1a-b68b-fc22a5bb7f50" path="/api/cars/{carPartner}" config-ref="HTTP_Request_configuration_car" responseTimeout="30000" outputMimeType="application/json">
+			<http:uri-params ><![CDATA[#[output application/json
+---
+{
+"carPartner":attributes.uriParams.carPartner
 }]]]></http:uri-params>
 		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="4d62a843-2a0f-4a08-99eb-b7a0277e1cdb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="18519639-0310-4032-b32f-1958f8abb34e" message="#[payload]"/>
+	</flow>
+	<flow name="getFlightByAirline" doc:id="7e47f70d-0648-4dfc-aa84-05156858cc6d" >
+		<http:request method="GET" doc:name="getFlightsByairline" doc:id="b9640110-0e25-4ef1-86cb-2d9b0f7acd66" config-ref="HTTP_Request_configuration_flights" path="/api/flights/{airline}" >
+			<http:uri-params ><![CDATA[#[output application/json
+---
+{
+"airline":attributes.uriParams.airline
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="1c5cd830-147a-4a26-86bd-4e48c5f3b896" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 	<flow name="carBookingDetails" doc:id="1ddabb73-7c7d-48e5-8599-a62bb15b1282" initialState="started" >
 		<scheduler doc:name="scheduler" doc:id="95a8bea7-bbfe-4dc7-8295-208c1ca4818e" >
@@ -270,7 +305,44 @@ output application/csv header=false
 payload]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
-			<file:write doc:name="Add records" doc:id="97007486-f3c1-4ff0-b905-473ac8ab082b" path="C:\Users\kapilbsharma\Desktop\FileSystem\NewData.csv"/>
+			<file:write doc:name="Add records" doc:id="97007486-f3c1-4ff0-b905-473ac8ab082b" path="C:\Users\NewData.csv"/>
 		</foreach>
+	</flow>
+	<flow name="getCarInfo" doc:id="f00f2e87-3659-4f55-9dbd-437446e98783" >
+		<set-variable value='#[attributes.queryParams.source default ""]' doc:name="source" doc:id="0dfd9ef8-6d9b-4a78-b711-2351a5d7f024" variableName="source" />
+		<set-variable value='#[attributes.queryParams.destination default ""]' doc:name="destination" doc:id="908c337e-92fa-4b58-aae7-7fa9c3c90039" variableName="destination" />
+		<choice doc:name="Choice" doc:id="f715beef-c724-4896-9a99-77586d921ee3" >
+			<when expression="#[vars.source !='' and vars.destination !='']" >
+				<http:request method="GET" doc:name="getCarsBySource&amp;Destination" doc:id="8c29d629-3fec-4581-9bf4-3bb1e02f4f21" config-ref="HTTP_Request_configuration_car" path="/api/cars">
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"source" : vars.source,
+	"destination":vars.destination
+}]]]></http:query-params>
+				</http:request>
+				<ee:transform doc:name="Transform Message" doc:id="941f191f-96d2-44f8-b6a3-e47596430a09" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				
+					<http:request method="GET" doc:name="Request" doc:id="f3e730a3-7207-48c9-8d6a-ce311c509557" config-ref="HTTP_Request_configuration_car" path="/api/cars"/>
+				
+				<ee:transform doc:name="Transform Message" doc:id="ac7f3d34-236c-489f-9f75-c51771fb0429" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
 	</flow>
 </mule>
