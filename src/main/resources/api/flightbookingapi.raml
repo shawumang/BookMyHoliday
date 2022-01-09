@@ -1,0 +1,184 @@
+#%RAML 1.0
+title: FlightBookingAPI
+
+types:
+  Flight: !include DataTypes/flightdataType.raml
+  FlightBooking: !include DataTypes/bookingdataType.raml
+  Car: !include DataTypes/CarDataType.raml
+  CarBooking: !include DataTypes/CarbookingdataType.raml
+
+
+/bookmyholiday:
+
+  /cars:
+    get:    
+      queryParameters:
+        source?: string
+        destination?: string
+        bookingDate?: string
+      
+      responses:
+        200:
+          body:
+            application/json:
+              type: Car
+              example: !include CarDummyData/CarExample.raml
+              
+
+    /{carPartner}:
+
+      get:
+        queryParameters:
+          source?: string
+          destination?: string
+          departureDate?: string
+
+        body:
+          application/json:
+            example: !include CarDummyData/CarDummyExample.raml
+      
+      post:
+      put:
+      delete:
+
+    
+
+    /booking:
+      description: To book a car
+      post:
+        body:
+          application/json:
+            type: CarBooking
+            examples: !include CarBookingDummyData/DummyBookingExample.raml
+        
+        responses:
+          201:
+            body:
+              application/json:
+                example: 
+
+                  message: Booking success
+              
+
+          
+          
+  
+      /{bookingId}:
+        description: To get booking details 
+        get:
+          responses:
+            200:
+              body:
+                application/json:
+                  type: CarBooking
+                  examples: !include CarBookingDummyData/BookingeExample.raml
+
+        
+      
+        delete:
+          responses:
+            202:
+              body:
+                application/json:
+                  example:
+                    message: Booking cancelled
+        
+        put:
+          body:
+            application/json:
+              type: CarBooking
+              example: !include CarBookingDummyData/updateBookingeExample.raml
+
+
+          responses:
+            204:
+              body:
+                application/json:
+                  example: 
+                    message: Booking updated successfully  
+  
+  /flights:
+   
+    get:
+
+      queryParameters:
+        source?: string
+        destination?: string
+        
+
+
+      responses:
+        200:
+          body:
+            application/json:
+              type: Flight
+              example: !include FlightDummyData/flightexample.raml
+
+    
+    post:
+      body:
+        application/json:
+          type: Flight
+          examples: !include FlightDummyData/Demoflightexample.raml
+
+      responses: 
+        201:
+          body: 
+            application/json:
+              example:
+                message: Flight added (but not really)          
+
+
+    /booking:
+      description: To book flight
+      post:
+        body:
+          application/json:
+            type: FlightBooking
+            examples: !include BookingDummyData/DummyBookingExample.raml
+        
+        responses:
+          201:
+            body:
+              application/json:
+                example: 
+
+                  message: Flight Booking success
+                  
+
+            
+            
+    
+      /{bookingId}:
+        description: To get booking details 
+        get:
+          responses:
+            200:
+              body:
+                application/json:
+                  type: FlightBooking
+                  examples: !include BookingDummyData/BookingeExample.raml
+
+        
+      
+        delete:
+          responses:
+            202:
+              body:
+                application/json:
+                  example:
+                    message: Booking cancelled
+        
+        put:
+          body:
+            application/json:
+              type: FlightBooking
+              example: !include BookingDummyData/updateBookingeExample.raml
+
+
+          responses:
+            204:
+              body:
+                application/json:
+                  example: 
+                    message: Departure Date is updated !!

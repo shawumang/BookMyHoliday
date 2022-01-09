@@ -1,0 +1,11 @@
+[{
+	"airline":"Indigo",
+	"departureDate":"2021-12-28T12:30:00",
+	"destination":"xyz",
+	"source":"abc",
+	"flightNumber":"XYNZG",
+	"price":230,
+	"totalSeats":34				
+
+
+}]

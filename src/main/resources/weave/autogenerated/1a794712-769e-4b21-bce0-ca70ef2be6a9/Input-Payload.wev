@@ -1,0 +1,18 @@
+%dw 2.0
+
+type auto_1a794712_769e_4b21_bce0_ca70ef2be6a9_Input_Payload = {
+  flightCode: String, 
+  destination: String, 
+  passengerInfo: {
+    name: Array<String>, 
+    seats: Number, 
+    _?: Any
+  }, 
+  travellerName: String, 
+  departureDate: String, 
+  source: String, 
+  airline: String, 
+  bookingId: String, 
+  _?: Any
+}
+
