@@ -89,50 +89,6 @@ output application/json
 			</otherwise>
 		</choice>
 	</flow>
-	<flow name="BookMyFlight" doc:id="b229ff63-9f49-40ce-93aa-38c292fad547">
-		<ee:transform doc:name="Input payload mapping" doc:id="09e47708-946d-4080-a8eb-702c97b063b9" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	flightCode__c: payload.flightCode,
-	source__c: payload.source,
-	destination__c: payload.destination,
-	departureDate__c: payload.departureDate,
-	booking_mail__c: payload.booking_mail,
-	travellerName__c: payload.travellerName,
-	airline__c: payload.airline
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<ee:transform doc:name="Output Payload mapping" doc:id="527ca2e7-c42c-4f52-af20-1c0929c12fc4">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-[{
-	airline__c: payload.airline__c,
-	travellerName__c: payload.travellerName__c,
-	departureDate__c: payload.departureDate__c as DateTime,
-	flightCode__c: payload.flightCode__c,
-	source__c: payload.source__c,
-	destination__c: payload.destination__c,
-	booking_mail__c: payload.booking_mail__c
-}]]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<salesforce:create type="Booking__c" doc:name="Flight Booking" doc:id="c765e1f4-e9fc-4efd-bbad-e86875564b4a" config-ref="Salesforce_Config"/>
-		<ee:transform doc:name="Salesforce Response" doc:id="6fd31ac0-713b-4883-acb5-817473132405" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="cf3c0536-d6e2-49c8-afa3-57e567d3c6f2" message="#[payload]" />
-	</flow>
 	<flow name="FlightBookingCancel" doc:id="a56d0dd8-cd7d-4741-896d-997d3d51ae19" initialState="stopped">
 		<salesforce:query doc:name="getBookingId" doc:id="61eb488d-0903-4192-83bc-3a1a018b2902" config-ref="Salesforce_Config">
 			<salesforce:salesforce-query ><![CDATA[Select Id from Booking__c where Name=':bookingId'
@@ -166,92 +122,6 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
-	<flow name="updateBookingDate" doc:id="6b3c8527-4acc-41e6-93af-b2cb2920ff9d">
-		<set-variable value='#[payload.departureDate default "2022-01-01T12:00:00.000Z" as DateTime]' doc:name="departureDate" doc:id="af58bb10-dc2a-4d92-b5b2-faef51913cec" variableName="departureDate"/>
-		<salesforce:query doc:name="getBookingDetails" doc:id="fee1143d-e455-4936-b999-7b19bbdc2901" config-ref="Salesforce_Config">
-			<salesforce:salesforce-query ><![CDATA[select Id,departureDate__c from Booking__c where Name=':bookingId']]></salesforce:salesforce-query>
-			<salesforce:parameters ><![CDATA[#[output application/java
----
-{
-	"bookingId" : attributes.uriParams.bookingId
-}]]]></salesforce:parameters>
-		</salesforce:query>
-		<ee:transform doc:name="salesforce result mapping" doc:id="d03454a3-4eed-4d01-b778-7b2a15012bc2" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-payload map(item,index)->{
-	
-	Id:item.Id,
-	departureDate:item.departureDate__c
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<ee:transform doc:name="Transform Message" doc:id="1a794dda-7677-410e-a58a-79af2dba7756" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-[{
-	Id:payload.Id,
-	departureDate__c:vars.departureDate as DateTime
-}]]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<salesforce:update type="Booking__c" doc:name="Update" doc:id="042da450-68bd-40c3-bcb3-b95fb45240e2" config-ref="Salesforce_Config">
-		</salesforce:update>
-		<ee:transform doc:name="Transform Message" doc:id="c0247a72-4a8e-4ab4-8a55-2a5db303b349" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="432ac570-e3c9-42ba-a175-2fa28ebe10cb" message="#[payload]"/>
-	</flow>
-	<flow name="BookMyCar" doc:id="c62b2b0b-3f97-41c5-a8c6-64b53ecd0cab">
-		<ee:transform doc:name="Input payload mapping" doc:id="2ea50968-4fc2-4c72-bd11-d82be4cea03d" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	source__c: payload.source,
-	destination__c: payload.destination,
-	company__c: payload.company,
-	bookingDate__c: payload.bookingDate,
-	price__c: payload.price
-	
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<ee:transform doc:name="Transform Message" doc:id="aff3a066-6580-4034-b062-f144f81b2170" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-[{
-	company__c: payload.company__c,
-	source__c: payload.source__c,
-	destination__c: payload.destination__c,
-	price__c: payload.price__c,
-	bookingDate__c: payload.bookingDate__c as DateTime
-}]]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<salesforce:create type="CarBooking__c" doc:name="Car Booking" doc:id="48ea614c-cd13-4869-b4c3-db6cc603e0a1" config-ref="Salesforce_Config"/>
-		<ee:transform doc:name="Salesforce Response" doc:id="395200ef-317c-432d-8ea6-c2eb991e2a42" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="b73fd34a-1f7a-4830-b837-e46179c8ec5c" message="#[payload]" />
-	</flow>
 	<flow name="getCarsByCarPartner" doc:id="82c23923-5cb3-4667-82e6-07b329d98615" >
 		<http:request method="GET" doc:name="Request" doc:id="57ea5d56-acf5-4b1a-b68b-fc22a5bb7f50" path="/api/cars/{carPartner}" config-ref="HTTP_Request_configuration_car" responseTimeout="30000" outputMimeType="application/json">
 			<http:uri-params ><![CDATA[#[output application/json
@@ -268,7 +138,6 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="18519639-0310-4032-b32f-1958f8abb34e" message="#[payload]"/>
 	</flow>
 	<flow name="getFlightByAirline" doc:id="7e47f70d-0648-4dfc-aa84-05156858cc6d" >
 		<http:request method="GET" doc:name="getFlightsByairline" doc:id="b9640110-0e25-4ef1-86cb-2d9b0f7acd66" config-ref="HTTP_Request_configuration_flights" path="/api/flights/{airline}" >
@@ -344,5 +213,100 @@ payload]]></ee:set-payload>
 				</ee:transform>
 			</otherwise>
 		</choice>
+	</flow>
+	<flow name="updateMyBookingDate" doc:id="c5fb8449-c4ef-4380-8515-7089691e162e" >
+		<set-variable value='#[payload.departureDate default "2022-01-01T12:00:00.000Z" as DateTime]' doc:name="departureDate" doc:id="167158bd-718f-452a-a82b-30c50c55f29b" variableName="departureDate" />
+		<salesforce:query doc:name="getBookingDetails" doc:id="cecfe5af-aa13-4cee-8af8-afd7d031c0cf" config-ref="Salesforce_Config" >
+			<salesforce:salesforce-query ><![CDATA[select Id,departureDate__c from Booking__c where Name=':bookingId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : attributes.uriParams.bookingId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="set departureDate" doc:id="66a45de0-17fe-4354-b766-b1b4b6a2c6d1">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	Id: payload01.Id,
+	departureDate__c: vars.departureDate as DateTime
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:update type="Booking__c" doc:name="update departureDate" doc:id="008dc66a-2741-4707-af83-44814933ef61" config-ref="Salesforce_Config" />
+		<ee:transform doc:name="message" doc:id="82cc5e25-ae14-4352-a959-324fe0e4aa69">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"Booking date updated!!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="BookMyCar" doc:id="92177b0f-ea70-4ea4-a83d-424c6c6b7fdb" >
+		<ee:transform doc:name="payload mapping" doc:id="662794c3-399b-45d2-98ee-87af5b45ba4a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	source__c:payload.source ,
+	destination__c: payload.destination,
+	company__c: payload.company,
+	bookingDate__c: payload.bookingDate,
+	price__c: payload.price
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="CarBooking__c" doc:name="Car Booking" doc:id="39795780-970b-4740-b375-27244ecff6fa" config-ref="Salesforce_Config" />
+		<ee:transform doc:name="Booking result" doc:id="ce0de1b4-8eb1-4b92-ab31-6547450d61f4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"Car Booked successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="BookMyFlight" doc:id="0c955923-b3c1-4431-9093-f8c4136304e3" >
+		<ee:transform doc:name="payload mapping" doc:id="c72298b3-63f5-4fde-a138-9fc214fa696a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	airline__c: payload.airline,
+	travellerName__c: payload.travellerName,
+	flightCode__c: payload.flightCode,
+	source__c: payload.source,
+	destination__c: payload.destination,
+	booking_mail__c: payload.booking_mail,
+	departureDate__c: payload.departureDate as DateTime
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="Booking__c" doc:name="Flight Booking" doc:id="fe84bfdd-7871-41bc-a4db-8072185c6796" config-ref="Salesforce_Config" />
+		<ee:transform doc:name="Transform Message" doc:id="db707c23-e752-42b7-ad4a-416002e90689" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.successful default true){
+	
+	"message":"booking successful"
+}
+else{
+	
+	"message":message.payload.items.statusCode
+	
+	}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>

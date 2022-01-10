@@ -1,6 +1,6 @@
 %dw 2.0
 
-type auto_6b3c8527_4acc_41e6_93af_b2cb2920ff9d_Input_Attributes = {|
+type auto_0c955923_b3c1_4431_9093_f8c4136304e3_Input_Attributes = {|
   clientCertificate?: {|
     publicKey?: {|  |}, 
     "type"?: String, 
@@ -16,7 +16,7 @@ type auto_6b3c8527_4acc_41e6_93af_b2cb2920ff9d_Input_Attributes = {|
   requestPath: String, 
   requestUri: String, 
   scheme: String, 
-  uriParams: {| bookingId: String |}, 
+  uriParams: {|  |}, 
   version: String, 
   localAddress: String
 |}

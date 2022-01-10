@@ -126,7 +126,7 @@ output application/json
                 <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="updateBookingDate" doc:id="4d2c3136-5cd9-404e-9aa9-dc6bc1702d52" name="updateBookingDate" />
+        <flow-ref doc:name="updateMyBookingDate" doc:id="4d2c3136-5cd9-404e-9aa9-dc6bc1702d52" name="updateMyBookingDate" />
     </flow>
     <flow name="put:\bookmyholiday\cars\booking\(bookingId):application\json:flightbookingapi-config">
         <ee:transform>
@@ -224,10 +224,10 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\bookmyholiday\cars\(carPartner):application\json:flightbookingapi-config">
-        <flow-ref doc:name="Flow Reference" doc:id="6903145b-ea50-4224-98a8-f58420e980de" name="getCarsByCarPartner" />
+        <flow-ref doc:name="GetCarByPartner" doc:id="6903145b-ea50-4224-98a8-f58420e980de" name="getCarsByCarPartner" />
     </flow>
     <flow name="post:\bookmyholiday\flights\booking:application\json:flightbookingapi-config">
-        <flow-ref doc:name="Flow Reference" doc:id="e3cf8120-4d67-4c6d-8008-c3cb8503b246" name="BookMyFlight" />
+        <flow-ref doc:name="BookMyFlight" doc:id="e3cf8120-4d67-4c6d-8008-c3cb8503b246" name="BookMyFlight" />
     </flow>
     <flow name="post:\bookmyholiday\cars\booking:application\json:flightbookingapi-config">
         <flow-ref doc:name="BookMyCar" doc:id="55eeb9c8-dfb1-4d06-9c1f-1d3f5a88eab6" name="BookMyCar" />
