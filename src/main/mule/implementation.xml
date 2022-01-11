@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:file="http://www.mulesoft.org/schema/mule/file"
-	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
-http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
 	<flow name="getFlightsInfo" doc:id="759cd051-d67a-4982-9341-38e65347b424">
 		<set-variable value='#[attributes.queryParams.source default ""]' doc:name="source" doc:id="5afa7ca7-17af-4097-a05e-c6001384e579" variableName="source"/>
 		<set-variable value='#[attributes.queryParams.destination default ""]' doc:name="destination" doc:id="a52124a6-b5e3-468b-9e44-22e7eada96a1" variableName="destination"/>
@@ -306,6 +307,93 @@ else{
 	"message":message.payload.items.statusCode
 	
 	}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getHotelsByCity" doc:id="d26362f5-6fed-4d4f-b255-e0f8251cf0bd" >
+		<set-variable value="#[attributes.uriParams.city]" doc:name="city" doc:id="b09aa693-3fdb-449a-83d4-2c436df31324" variableName="city" />
+		<ee:transform doc:name="Convert To XML" doc:id="e064b74e-d619-47a0-a735-65f3b3e30911" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/HotelAPI/
+---
+{
+	ns0#getHotelsByCity: {
+		city: vars.city
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="getHotelsByCity" doc:id="4be1aa63-e0cc-4c7f-9fb0-8749217b4127" config-ref="Web_Service_Consumer_Config" operation="getHotelsByCity">
+		</wsc:consume>
+		<ee:transform doc:name="XML To JSON" doc:id="b474550b-2d1c-4891-ac2b-96ba6f584af4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0ns ns0 http://www.example.org/HotelAPI/
+
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getHotelsByRating" doc:id="cb5c2fac-ddb4-4b7e-9d20-32cc74f060f7" >
+		<set-variable value="#[attributes.uriParams.rating]" doc:name="rating" doc:id="66b89d85-3b53-4c75-9022-94a3d17e5411" variableName="rating" />
+		<ee:transform doc:name="Convert To XML" doc:id="f3838b7d-b082-449c-8922-b74f91f20796" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/HotelAPI/
+---
+{
+	ns0#getHotelsByRating: {
+		rating: vars.rating as Number
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="getHotelsByRating" doc:name="getHotelsByRating" doc:id="ec9a076f-6613-4814-9ef4-8c27b81d37be" config-ref="Web_Service_Consumer_Config" />
+		<ee:transform doc:name="XML To JSON" doc:id="7272f98a-ce80-4a85-a217-e824bfb8f2a6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.example.org/HotelAPI/
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="implementationFlow" doc:id="709e96a7-f8fd-4818-a66c-0d34d1b73c91" >
+		<http:listener doc:name="Listener" doc:id="e4919673-af1a-41f3-b005-510d2b4278a2" config-ref="HTTP_Listener_config" path="/bookmyhotel" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="596a0f1e-0e61-4882-944d-f0e660466d9c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/HotelAPI/
+---
+{
+	ns0#BookMyHotel: {
+		Name: payload.Name,
+		hotelName: payload.hotelName,
+		address: payload.address,
+		bookingDate: payload.bookingDate as DateTime,
+		bookingPrice: payload.bookingPrice,
+		checkInTime: payload.checkInTime as DateTime,
+		checkOutTime: payload.checkOutTime as DateTime
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="538b6dab-05de-4c50-a475-0148e8a9c305" message="#[payload]"/>
+		<wsc:consume operation="BookMyHotel" doc:name="Consume" doc:id="c0460fe5-a407-46b1-94b9-7fac803d953c" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="89afae05-fe62-445e-9ed4-5b573363bcfb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"created success"
+}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>

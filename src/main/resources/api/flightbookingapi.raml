@@ -1,5 +1,4 @@
 #%RAML 1.0
-baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/fca9f5fb-fcfc-417e-b2df-d8a5298a9c14 # 
 title: FlightBookingAPI
 mediaType: 
   - application/json
@@ -18,6 +17,8 @@ types:
   FlightBooking: !include DataTypes/bookingdataType.raml
   Car: !include DataTypes/CarDataType.raml
   CarBooking: !include DataTypes/CarbookingdataType.raml
+  Hotel: !include DataTypes/hoteldataType.raml
+  HotelBooking: !include DataTypes/hotelBookingdataType.raml
 
 securedBy:
       - oauth_2_0
@@ -51,9 +52,7 @@ securedBy:
           application/json:
             example: !include CarDummyData/CarDummyExample.raml
       
-      post:
-      put:
-      delete:
+     
 
     
 
@@ -72,14 +71,6 @@ securedBy:
                 example: 
 
                   message: Booking success
-          
-          409:
-            body:
-              application/json:
-                example: 
-
-                  message: Some error pls check
-             
               
 
           
@@ -151,6 +142,7 @@ securedBy:
                 message: Flight added (but not really)          
     
     /{airline}:
+
       get:
         queryParameters:
           source?: string
@@ -216,3 +208,52 @@ securedBy:
                 application/json:
                   example: 
                     message: Departure Date is updated !!
+  
+  /hotels:
+
+      /{city}:
+        get:
+          responses:
+            200:
+              body:
+                application/xml:
+                  type: Hotel
+                  example: !include HotelDummyData/hotelExample.raml
+
+      /rating/{rating}:
+        get:
+          responses:
+            200:
+              body:
+                application/xml:
+                  type: Hotel
+                  example: !include HotelDummyData/hotelByRatingExample.raml
+      
+      /booking:
+
+        post:
+          body:
+            application/xml:
+              type: HotelBooking
+              example: !include HotelBookingDummyData/hotelBookingexample.raml
+
+          responses:
+                201:
+                  body:
+                    application/xml:
+                      
+                      example: 
+                        message: Hotel booked successfully!!
+              
+        delete:
+          responses:
+            204:
+              body:
+                application/xml:
+                  example:
+                    message: Booking cancelled!!
+                                           
+                
+                    
+                    
+

@@ -1,0 +1,9 @@
+{
+	"Name":"Sanjay",
+	"hotelName":"OYO121",
+	"address":"XYZ",
+	"bookingDate":"2022-01-23T18:25:43.511Z",
+	"bookingPrice":2000,
+	"checkInTime":"2022-01-23T18:25:43.511Z",
+	"checkOutTime": "2022-01-24T18:25:43.511Z"
+}

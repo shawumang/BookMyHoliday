@@ -269,7 +269,7 @@ output application/json
         <logger level="INFO" message="delete:\bookmyholiday\flights\(airline):flightbookingapi-config" />
     </flow>
     <flow name="get:\bookmyholiday\flights\(airline):application\json:flightbookingapi-config">
-        <flow-ref doc:name="getFlightByAirline" doc:id="a0b480d1-5ffb-4812-bddb-ff001d6dffdd" name="getFlightByAirline"/>
+        <flow-ref doc:name="getFlightByAirline" doc:id="a0b480d1-5ffb-4812-bddb-ff001d6dffdd" name="getFlightByAirline" />
     </flow>
     <flow name="post:\bookmyholiday\flights\(airline):flightbookingapi-config">
         <ee:transform>
@@ -278,5 +278,35 @@ output application/json
             </ee:variables>
         </ee:transform>
         <logger level="INFO" message="post:\bookmyholiday\flights\(airline):flightbookingapi-config" />
+    </flow>
+    <flow name="delete:\bookmyholiday\hotels\booking:flightbookingapi-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Booking cancelled!!"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\bookmyholiday\hotels\(city):flightbookingapi-config">
+        <flow-ref doc:name="getHotelsByCity" doc:id="20c9ac85-acb7-4cc1-9b02-ae773c2eb593" name="getHotelsByCity" />
+    </flow>
+    <flow name="post:\bookmyholiday\hotels\booking:application\xml:flightbookingapi-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Hotel booked successfully!!"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\bookmyholiday\hotels\rating\(rating):flightbookingapi-config">
+		<flow-ref doc:name="getHotelsByRating" doc:id="b9b644cf-87be-4531-ac2d-93819ea1fae5" name="getHotelsByRating"/>
     </flow>
 </mule>
