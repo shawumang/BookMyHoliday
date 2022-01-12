@@ -333,7 +333,7 @@ ns ns0 http://www.example.org/HotelAPI/
 
 output application/json
 ---
-payload]]></ee:set-payload>
+payload.body]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
@@ -356,16 +356,17 @@ ns ns0 http://www.example.org/HotelAPI/
 		<ee:transform doc:name="XML To JSON" doc:id="7272f98a-ce80-4a85-a217-e824bfb8f2a6" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
+
+
 output application/json
 ns ns0 http://www.example.org/HotelAPI/
 ---
-payload]]></ee:set-payload>
+payload.body]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
-	<flow name="implementationFlow" doc:id="709e96a7-f8fd-4818-a66c-0d34d1b73c91" >
-		<http:listener doc:name="Listener" doc:id="e4919673-af1a-41f3-b005-510d2b4278a2" config-ref="HTTP_Listener_config" path="/bookmyhotel" allowedMethods="POST"/>
-		<ee:transform doc:name="Transform Message" doc:id="596a0f1e-0e61-4882-944d-f0e660466d9c" >
+	<flow name="bookMyHotel" doc:id="709e96a7-f8fd-4818-a66c-0d34d1b73c91" >
+		<ee:transform doc:name="Transform Message" doc:id="71b4735d-ff8b-49e5-af18-f2d3920c9e7d" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/xml
@@ -384,15 +385,40 @@ ns ns0 http://www.example.org/HotelAPI/
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="538b6dab-05de-4c50-a475-0148e8a9c305" message="#[payload]"/>
-		<wsc:consume operation="BookMyHotel" doc:name="Consume" doc:id="c0460fe5-a407-46b1-94b9-7fac803d953c" config-ref="Web_Service_Consumer_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="89afae05-fe62-445e-9ed4-5b573363bcfb" >
+		<wsc:consume operation="BookMyHotel" doc:name="bookMyHotel" doc:id="c0460fe5-a407-46b1-94b9-7fac803d953c" config-ref="Web_Service_Consumer_Config">
+		</wsc:consume>
+		<ee:transform doc:name="Transform Message" doc:id="02ebd15c-c6be-474d-b4ad-925dcbe7a41f" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="cancelHotelBooking" doc:id="6bed1ee6-dec4-4105-9a54-407618477b63" >
+		<set-variable value="#[attributes.uriParams.bookingId]" doc:name="bookingId" doc:id="342a6136-ebf8-4c66-b39d-5de74d9de6b1" variableName="bookingId"/>
+		<ee:transform doc:name="JSON To XML" doc:id="49ce1918-1b12-4f99-af09-438c36147168" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/HotelAPI/
 ---
 {
-	"message":"created success"
+	ns0#CancelBooking: {
+		bookingId: vars.bookingId as String
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="CancelBooking" doc:name="Cancel Booking" doc:id="cb6ac3cf-cf24-4937-8d3a-bc7a183e82c0" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="7d0bcbb6-238f-45b0-896f-63b1843c8337" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"message":"success"
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>

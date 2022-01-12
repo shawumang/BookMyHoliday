@@ -233,14 +233,14 @@ securedBy:
 
         post:
           body:
-            application/xml:
+            application/json:
               type: HotelBooking
               example: !include HotelBookingDummyData/hotelBookingexample.raml
 
           responses:
                 201:
                   body:
-                    application/xml:
+                    application/json:
                       
                       example: 
                         message: Hotel booked successfully!!
@@ -249,7 +249,7 @@ securedBy:
           responses:
             204:
               body:
-                application/xml:
+                application/json:
                   example:
                     message: Booking cancelled!!
                                            
