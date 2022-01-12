@@ -1,0 +1,13 @@
+%dw 2.0
+
+type auto_c3d90de1_b344_4ff5_a1a2_330ffd7b6110_Output_Payload = {
+  price?: Number, 
+  destination?: String, 
+  company?: String, 
+  bookingDate?: String, 
+  source?: String, 
+  bookingId?: Number, 
+  customer?: String, 
+  _?: Any
+}
+

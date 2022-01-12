@@ -11,6 +11,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
 http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
 	<flow name="getFlightsInfo" doc:id="759cd051-d67a-4982-9341-38e65347b424">
+		<logger level="INFO" doc:name="Entry Logger" doc:id="adc7999c-97c3-4d3c-b071-d02ba8040d6a" message="Entering into #[flow.name] flow"/>
 		<set-variable value='#[attributes.queryParams.source default ""]' doc:name="source" doc:id="5afa7ca7-17af-4097-a05e-c6001384e579" variableName="source"/>
 		<set-variable value='#[attributes.queryParams.destination default ""]' doc:name="destination" doc:id="a52124a6-b5e3-468b-9e44-22e7eada96a1" variableName="destination"/>
 		<choice doc:name="Choice" doc:id="a64fda5b-2884-41c8-ac2f-9ec1cd5ed13b" >
@@ -44,8 +45,11 @@ payload]]></ee:set-payload>
 				</ee:transform>
 			</otherwise>
 		</choice>
+		<logger level="INFO" doc:name="Exit Logger" doc:id="b433d44f-ef5a-4bd1-9822-34f9ec27adb6" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="FlightBookingDetails" doc:id="1a794712-769e-4b21-bce0-ca70ef2be6a9">
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="f8293e72-53e8-413a-b428-0012e0264d87" message="Entering into #[flow.name] flow" />
 		<salesforce:query-all doc:name="Query all" doc:id="e9a50fc9-820b-4ec7-978f-1506f4625338" config-ref="Salesforce_Config">
 			<salesforce:salesforce-query ><![CDATA[select Name,airline__c,source__c,destination__c,departureDate__c,flightCode__c,travellerName__c,booking_mail__c from Booking__c where Name = ':bookingId']]></salesforce:salesforce-query>
 			<salesforce:parameters ><![CDATA[#[output application/java
@@ -89,8 +93,11 @@ output application/json
 				</ee:transform>
 			</otherwise>
 		</choice>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="341439f2-849f-4005-b391-85b64da2f2b2" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="FlightBookingCancel" doc:id="a56d0dd8-cd7d-4741-896d-997d3d51ae19" initialState="stopped">
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="9fe18b44-0d82-4124-b4db-8234ff5c2b97" message="Entering into #[flow.name] flow" />
 		<salesforce:query doc:name="getBookingId" doc:id="61eb488d-0903-4192-83bc-3a1a018b2902" config-ref="Salesforce_Config">
 			<salesforce:salesforce-query ><![CDATA[Select Id from Booking__c where Name=':bookingId'
 
@@ -122,8 +129,11 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="602c14a2-c51b-4bd5-937d-81d7aa9c477e" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="getCarsByCarPartner" doc:id="82c23923-5cb3-4667-82e6-07b329d98615" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="2df19c1e-87b2-400e-af2b-3f04ac4916ca" message="Entering into #[flow.name] flow" />
 		<http:request method="GET" doc:name="Request" doc:id="57ea5d56-acf5-4b1a-b68b-fc22a5bb7f50" path="/api/cars/{carPartner}" config-ref="HTTP_Request_configuration_car" responseTimeout="30000" outputMimeType="application/json">
 			<http:uri-params ><![CDATA[#[output application/json
 ---
@@ -139,8 +149,11 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="964e2a53-f8df-4ca8-bdee-7186c24ad142" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="getFlightByAirline" doc:id="7e47f70d-0648-4dfc-aa84-05156858cc6d" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="e813aff7-3733-4928-aa68-659a3bb22a6b" message="Entering into #[flow.name] flow" />
 		<http:request method="GET" doc:name="getFlightsByairline" doc:id="b9640110-0e25-4ef1-86cb-2d9b0f7acd66" config-ref="HTTP_Request_configuration_flights" path="/api/flights/{airline}" >
 			<http:uri-params ><![CDATA[#[output application/json
 ---
@@ -156,6 +169,8 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="b4d67ae9-ad33-47f1-b8c4-92810f36a3e6" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="carBookingDetails" doc:id="1ddabb73-7c7d-48e5-8599-a62bb15b1282" initialState="started" >
 		<scheduler doc:name="scheduler" doc:id="95a8bea7-bbfe-4dc7-8295-208c1ca4818e" >
@@ -163,6 +178,7 @@ payload]]></ee:set-payload>
 				<fixed-frequency frequency="1" timeUnit="HOURS" />
 			</scheduling-strategy>
 		</scheduler>
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="c848e6fd-15ba-40ff-9024-725335c14dc0" message="Entering into #[flow.name] flow" />
 		<salesforce:query doc:name="get car booking details" doc:id="a14ce863-58a2-4b6d-bb22-c03a1650e96d" config-ref="Salesforce_Config">
 			<salesforce:salesforce-query ><![CDATA[select Name,bookingDate__c,company__c,destination__c,price__c,source__c,customer__c from CarBooking__c]]></salesforce:salesforce-query>
 		</salesforce:query>
@@ -175,10 +191,13 @@ output application/csv header=false
 payload]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
-			<file:write doc:name="Add records" doc:id="97007486-f3c1-4ff0-b905-473ac8ab082b" path="C:\Users\NewData.csv"/>
+			<file:write doc:name="Add records" doc:id="97007486-f3c1-4ff0-b905-473ac8ab082b" path="C:\Users\umangsprasad\Documents\NewData.csv"/>
 		</foreach>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="2cca3262-9dd2-47ca-a375-2ea3b4f70b72" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="getCarInfo" doc:id="f00f2e87-3659-4f55-9dbd-437446e98783" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="3d2f3d85-c9b8-4a3d-b892-ee845464d442" message="Entering into #[flow.name] flow" />
 		<set-variable value='#[attributes.queryParams.source default ""]' doc:name="source" doc:id="0dfd9ef8-6d9b-4a78-b711-2351a5d7f024" variableName="source" />
 		<set-variable value='#[attributes.queryParams.destination default ""]' doc:name="destination" doc:id="908c337e-92fa-4b58-aae7-7fa9c3c90039" variableName="destination" />
 		<choice doc:name="Choice" doc:id="f715beef-c724-4896-9a99-77586d921ee3" >
@@ -214,8 +233,11 @@ payload]]></ee:set-payload>
 				</ee:transform>
 			</otherwise>
 		</choice>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="b3a5f91a-95d7-44a6-b317-ea9ccfafa5be" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="updateMyBookingDate" doc:id="c5fb8449-c4ef-4380-8515-7089691e162e" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="ff5a4706-39bc-4cce-ac3a-c8df957c8288" message="Entering into #[flow.name] flow" />
 		<set-variable value='#[payload.departureDate default "2022-01-01T12:00:00.000Z" as DateTime]' doc:name="departureDate" doc:id="167158bd-718f-452a-a82b-30c50c55f29b" variableName="departureDate" />
 		<salesforce:query doc:name="getBookingDetails" doc:id="cecfe5af-aa13-4cee-8af8-afd7d031c0cf" config-ref="Salesforce_Config" >
 			<salesforce:salesforce-query ><![CDATA[select Id,departureDate__c from Booking__c where Name=':bookingId']]></salesforce:salesforce-query>
@@ -247,8 +269,11 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="3fc662ff-9ee5-4f91-8744-77a354ed7603" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="BookMyCar" doc:id="92177b0f-ea70-4ea4-a83d-424c6c6b7fdb" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="6e2386ef-7bef-44cc-9f57-07d3da85669e" message="Entering into #[flow.name] flow" />
 		<ee:transform doc:name="payload mapping" doc:id="662794c3-399b-45d2-98ee-87af5b45ba4a" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -274,8 +299,11 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="64c4ba6b-c4d7-4291-990c-7fe7c1a5d8c5" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="BookMyFlight" doc:id="0c955923-b3c1-4431-9093-f8c4136304e3" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="f869c1b9-3c56-4a1b-bd18-1be0c299d605" message="Entering into #[flow.name] flow" />
 		<ee:transform doc:name="payload mapping" doc:id="c72298b3-63f5-4fde-a138-9fc214fa696a">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -309,8 +337,11 @@ else{
 	}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="6c89e404-c5a1-4ced-a563-1c4eee0cdfba" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="getHotelsByCity" doc:id="d26362f5-6fed-4d4f-b255-e0f8251cf0bd" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="7650a3d6-0579-4d1b-a185-5e376c606ab4" message="Entering into #[flow.name] flow" />
 		<set-variable value="#[attributes.uriParams.city]" doc:name="city" doc:id="b09aa693-3fdb-449a-83d4-2c436df31324" variableName="city" />
 		<ee:transform doc:name="Convert To XML" doc:id="e064b74e-d619-47a0-a735-65f3b3e30911" >
 			<ee:message >
@@ -336,8 +367,11 @@ output application/json
 payload.body]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="42875ad4-a345-49f7-b77b-b32c8c31be08" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="getHotelsByRating" doc:id="cb5c2fac-ddb4-4b7e-9d20-32cc74f060f7" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="f84fa9dd-1a8f-46d4-9359-06a3b0bf3c52" message="Entering into #[flow.name] flow" />
 		<set-variable value="#[attributes.uriParams.rating]" doc:name="rating" doc:id="66b89d85-3b53-4c75-9022-94a3d17e5411" variableName="rating" />
 		<ee:transform doc:name="Convert To XML" doc:id="f3838b7d-b082-449c-8922-b74f91f20796" >
 			<ee:message >
@@ -364,8 +398,11 @@ ns ns0 http://www.example.org/HotelAPI/
 payload.body]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="b42575d2-6958-424f-a1fb-c091301a4d83" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="bookMyHotel" doc:id="709e96a7-f8fd-4818-a66c-0d34d1b73c91" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="37f1da3b-40bf-4b55-9c14-0f983b35c227" message="Entering into #[flow.name] flow" />
 		<ee:transform doc:name="Transform Message" doc:id="71b4735d-ff8b-49e5-af18-f2d3920c9e7d" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -395,8 +432,11 @@ output application/java
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="963b285f-f818-413f-8494-9976f7f69990" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
 	</flow>
 	<flow name="cancelHotelBooking" doc:id="6bed1ee6-dec4-4105-9a54-407618477b63" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="08c693e9-a797-4e9f-bfb4-249f0797a483" message="Entering into #[flow.name] flow" />
 		<set-variable value="#[attributes.uriParams.bookingId]" doc:name="bookingId" doc:id="342a6136-ebf8-4c66-b39d-5de74d9de6b1" variableName="bookingId"/>
 		<ee:transform doc:name="JSON To XML" doc:id="49ce1918-1b12-4f99-af09-438c36147168" >
 			<ee:message >
@@ -422,5 +462,56 @@ output application/java
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="78c9cb3d-ce4d-49cc-9edd-f3239127bd7f" message="Exiting from #[flow.name] flow" />
+		<error-handler ref="global_exceptiionHandler" />
+	</flow>
+	<flow name="getCarByBookingId" doc:id="c3d90de1-b344-4ff5-a1a2-330ffd7b6110" >
+		<logger level="INFO" doc:name="Copy_of_Entry Logger" doc:id="7099d7b8-63c2-4927-87d7-21eb8d408c9c" message="Entering into #[flow.name] flow" />
+		<salesforce:query doc:name="Query" doc:id="47a93915-76b3-40ff-953e-cc1adc327a5f" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[select Name,bookingDate__c,company__c,destination__c,price__c,source__c,customer__c from CarBooking__c where Name = ':bookingId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : attributes.uriParams.bookingId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<choice doc:name="Choice" doc:id="63691596-1a09-4923-90af-8c9b15e94b46" >
+			<when expression="#[sizeOf(payload)&gt;0]" >
+				<ee:transform doc:name="Transform Message" doc:id="d285c281-d959-4c78-a8bf-960d097894c6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	bookingId:payload01.Name default "",
+	source: payload01.source__c default "",
+	destination: payload01.destination__c default "",
+	departureDate: payload01.bookingDate__c as String default "",
+	travellerName: payload01.customer__c default "",
+	company: payload01.company__c default "",
+	price:payload01.price__c default ""
+}
+
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="14fbf8af-4b05-4307-b174-8fd3ec473658" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+
+var msg= vars.bookingId default "" ++" does not exist"
+
+output application/json
+---
+{
+	"message":msg
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="73cc815e-7668-4c8d-ab2f-df284152ac1b" message="Exiting from #[flow.name] flow" />
 	</flow>
 </mule>

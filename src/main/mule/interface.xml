@@ -121,13 +121,13 @@ output application/json
         </error-handler>
     </flow>
     <flow name="put:\bookmyholiday\flights\booking\(bookingId):application\json:flightbookingapi-config">
-        <flow-ref doc:name="updateMyBookingDate" doc:id="4d2c3136-5cd9-404e-9aa9-dc6bc1702d52" name="updateMyBookingDate" />
+		<flow-ref doc:name="updateMyBookingDate" doc:id="4d2c3136-5cd9-404e-9aa9-dc6bc1702d52" name="updateMyBookingDate" />
     </flow>
     <flow name="delete:\bookmyholiday\flights\booking\(bookingId):flightbookingapi-config">
-        <flow-ref doc:name="FlightBookingCancel" doc:id="40887211-554d-42dd-ba58-fb7cfdcf9e21" name="FlightBookingCancel" />
+		<flow-ref doc:name="FlightBookingCancel" doc:id="40887211-554d-42dd-ba58-fb7cfdcf9e21" name="FlightBookingCancel" />
     </flow>
     <flow name="get:\bookmyholiday\cars:flightbookingapi-config">
-        <flow-ref doc:name="getCarInfo" doc:id="731e24c7-ac9f-4be6-9cb2-b16298669265" name="getCarInfo" />
+		<flow-ref doc:name="getCarInfo" doc:id="731e24c7-ac9f-4be6-9cb2-b16298669265" name="getCarInfo" />
     </flow>
     <flow name="get:\bookmyholiday\flights:flightbookingapi-config">
         <flow-ref doc:name="getFlights" doc:id="00072faf-f08c-4243-82a9-8836eceaf150" name="getFlightsInfo" />
@@ -168,14 +168,6 @@ output application/json
     <flow name="get:\bookmyholiday\hotels\rating\(rating):flightbookingapi-config">
         <flow-ref doc:name="getHotelsByRating" doc:id="b9b644cf-87be-4531-ac2d-93819ea1fae5" name="getHotelsByRating" />
     </flow>
-    <flow name="put:\bookmyholiday\flights\(airline):flightbookingapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="airline">attributes.uriParams.'airline'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <logger level="INFO" message="put:\bookmyholiday\flights\(airline):flightbookingapi-config" />
-    </flow>
     <flow name="put:\bookmyholiday\cars\booking\(bookingId):application\json:flightbookingapi-config">
         <ee:transform>
             <ee:variables>
@@ -193,58 +185,10 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="delete:\bookmyholiday\flights\(airline):flightbookingapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="airline">attributes.uriParams.'airline'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <logger level="INFO" message="delete:\bookmyholiday\flights\(airline):flightbookingapi-config" />
-    </flow>
     <flow name="delete:\bookmyholiday\cars\booking\(bookingId):flightbookingapi-config">
 		<flow-ref doc:name="Flow Reference" doc:id="333e2241-f5d8-414d-a914-4913b0efbd4c" name="cancelHotelBooking"/>
     </flow>
     <flow name="get:\bookmyholiday\cars\booking\(bookingId):flightbookingapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  bookingId: 103,
-  company: "Meru",
-  bookingDate: "03 Jan,2022",
-  source: "Delhi",
-  destination: "Agra",
-  price: 3500,
-  customer: "Rajat"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="post:\bookmyholiday\flights:application\json:flightbookingapi-config">
-        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Flight added (but not really)"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="post:\bookmyholiday\flights\(airline):flightbookingapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="airline">attributes.uriParams.'airline'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <logger level="INFO" message="post:\bookmyholiday\flights\(airline):flightbookingapi-config" />
+		<flow-ref doc:name="Flow Reference" doc:id="f8f2582c-22d4-45b9-8a31-b158c8ef0370" name="getCarByBookingId"/>
     </flow>
 </mule>

@@ -100,7 +100,6 @@ http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ba9a8b68-ee8e-4074-a46f-1342851d2768" type="ANY" >
 			<set-variable value="500" doc:name="Set Variable" doc:id="0956d9fa-97da-4ac5-8875-96542b515c13" variableName="httpStatus" />
-			<set-variable value='"General Error type"' doc:name="Set Variable" doc:id="db6ef850-e45f-4427-9a16-e96647ad5ccf" variableName="errrorMessege"/>
 			<flow-ref doc:name="Flow Reference to global-prepare-error-response-sub-flow" doc:id="84836cf5-9143-4c7a-81be-8d691cb8d5ab" name="global-prepare-error-response-sub-flow" />
 		</on-error-propagate>
 	</error-handler>
@@ -116,7 +115,7 @@ output application/json
   error: {
     errorCode: vars.httpStatus default 500,
     errorDateTime: now() as String {format: "yyyy-MM-dd'T'HH:mm:ssZ"},
-    errorMessage: vars.errorMessage,
+    errorMessage: vars.errorMessage default error.errorType,
     errorDescription: error.description as String
   }
 }]]></ee:set-payload>
