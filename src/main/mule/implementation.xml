@@ -283,19 +283,25 @@ output application/java
 	source__c:payload.source ,
 	destination__c: payload.destination,
 	company__c: payload.company,
-	bookingDate__c: payload.bookingDate,
-	price__c: payload.price
+	bookingDate__c: payload.bookingDate as DateTime,
+	price__c: payload.price,
+	customer__c:payload.customer
 }]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<salesforce:create type="CarBooking__c" doc:name="Car Booking" doc:id="39795780-970b-4740-b375-27244ecff6fa" config-ref="Salesforce_Config" />
+		<salesforce:query doc:name="select bookingId Query" doc:id="aed0c26f-b714-4a9a-98c9-5408690d4773" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[select Name,customer__c from CarBooking__c ORDER BY Id DESC]]></salesforce:salesforce-query>
+		</salesforce:query>
 		<ee:transform doc:name="Booking result" doc:id="ce0de1b4-8eb1-4b92-ab31-6547450d61f4" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	"message":"Car Booked successfully"
+	"message":"Car Booked successfully",
+	"bookingId":payload[0].Name,
+	"Traveler":payload[0].customer__c
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -316,25 +322,28 @@ output application/java
 	source__c: payload.source,
 	destination__c: payload.destination,
 	booking_mail__c: payload.booking_mail,
-	departureDate__c: payload.departureDate as DateTime
+	departureDate__c: payload.departureDate as DateTime 
 }]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<salesforce:create type="Booking__c" doc:name="Flight Booking" doc:id="fe84bfdd-7871-41bc-a4db-8072185c6796" config-ref="Salesforce_Config" />
+		<salesforce:create type="Booking__c" doc:name="Flight Booking" doc:id="fe84bfdd-7871-41bc-a4db-8072185c6796" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c34de2ad-e17f-4665-a4e3-c6e8028f377c" message="---------------------------#[payload]"/>
+		<salesforce:query doc:name="select bookingId Query" doc:id="f428e327-5793-45a7-9a5b-a78a8ed46e82" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[select Name,travellerName__c from Booking__c ORDER BY Id DESC]]></salesforce:salesforce-query>
+		</salesforce:query>
 		<ee:transform doc:name="Transform Message" doc:id="db707c23-e752-42b7-ad4a-416002e90689" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-if(payload.successful default true){
-	
-	"message":"booking successful"
+
+{	
+	"message":"Flight Booked successfully",
+	"bookingId":payload[0].Name,
+	"Traveler":payload[0].travellerName__c
+
 }
-else{
-	
-	"message":message.payload.items.statusCode
-	
-	}]]></ee:set-payload>
+]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="6c89e404-c5a1-4ced-a563-1c4eee0cdfba" message="Exiting from #[flow.name] flow" />
@@ -430,6 +439,24 @@ ns ns0 http://www.example.org/HotelAPI/
 output application/java
 ---
 payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:query doc:name="select bookingId Query" doc:id="eadb6f4e-d29e-4b53-b319-d471ab943e23" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[select bookingId__c,Name from HotelBooking__c ORDER BY Id DESC]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="58891b42-e2ee-4350-8fe0-4bb573ae26ff">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+{	
+	"message":"Hotel Booked successfully",
+	"bookingId":payload[0].bookingId__c,
+	"Traveler":payload[0].Name
+
+}
+]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Copy_of_Exit Logger" doc:id="963b285f-f818-413f-8494-9976f7f69990" message="Exiting from #[flow.name] flow" />
